@@ -295,15 +295,15 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         l = []
         for item in question.split('\n'):
             if item.strip() == '':
-                l.append('#')
+                l.append('//')
             else:
-                l.append('# {item}'.format(item=item))
+                l.append('// {item}'.format(item=item))
         quote_question = '\n'.join(l)
 
         import codecs
         with codecs.open(filename, 'w', 'utf-8') as f:
             print("begin to write file")
-            content = '# -*- coding:utf-8 -*-'
+            content = '// -*- coding:utf-8 -*-'
             content += '\n'*3
             content += quote_question
             content += '\n'*3
