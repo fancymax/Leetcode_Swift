@@ -1,5 +1,5 @@
 # :pencil2: Leetcode Solutions with swift
-Update time:  2016-11-24 16:13:31
+Update time:  2016-11-24 17:56:36
 
 Auto created by [leetcode_generate](https://github.com/bonfy/leetcode) [Usage](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
 
