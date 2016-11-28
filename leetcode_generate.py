@@ -1,5 +1,12 @@
 # coding:utf-8
 
+#
+# Author: BONFY<foreverbonfy@163.com>
+# Github: https://github.com/bonfy
+# repo:   https://github.com/bonfy/leetcode
+# Usage:  Leetcode solution downloader and auto generate readme 
+#
+
 import requests
 import configparser
 import os
@@ -26,16 +33,8 @@ HEADERS = {
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36'  # NOQA
     }
 
-FILE_EXT = {
-    'python': 'py',
-    'java': 'java',
-    'ruby': 'rb',
-    'c++': 'cpp',
-    'swift': 'swift'
-}
 
-
-def get_username_password_from_config():
+def get_config_from_file():
     cp = configparser.ConfigParser()
     cp.read(CONFIG_FILE)
 
@@ -80,13 +79,31 @@ def check_and_make_dir(dirname):
         os.mkdir(dirname)
 
 
-CONFIG = get_username_password_from_config()
+class ProgLang:
+    def __init__(self, language, ext, annotation):
+        self.language = language
+        self.ext = ext
+        self.annotation = annotation
+
+ProgLangList = [ProgLang('c++', 'cpp', '//'),
+                ProgLang('java', 'java', '//'),
+                ProgLang('python', 'py', '#'),
+                ProgLang('c', 'c', '//'),
+                ProgLang('c#', 'cs', '//'),
+                ProgLang('javascript', 'js', '//'),
+                ProgLang('ruby', 'rb', '#'),
+                ProgLang('swift', 'swift', '//'),
+                ProgLang('go', 'go', '//')]
+
+ProgLangDict = dict((item.language, item) for item in ProgLangList)
+CONFIG = get_config_from_file()
 
 
 class QuizItem:
     def __init__(self, data):
         self.id = int(data['id'])
         self.title = data['title']
+        self.capital_title = data['capital_title']
         self.url = data['url']
         self.acceptance = data['acceptance']
         self.difficulty = data['difficulty']
@@ -107,6 +124,9 @@ class Leetcode:
         self.num_solved = 0
         self.num_total = 0
         self.num_lock = 0
+
+        self.solutions = []
+        self.proglang = ProgLangDict[CONFIG['language']]
 
         self.base_url = 'https://leetcode.com'
         self.session = requests.Session()
@@ -158,6 +178,37 @@ class Leetcode:
         self.items.reverse()
         self.num_lock = len([i for i in self.items if i.lock])
 
+        # set self.solutions
+        self._load_solutions_by_language()
+
+    def _load_solutions_by_language(self):
+        """only load passed solutions by language
+           set self.solutions
+        """
+        page = 0
+        while True:
+            page += 1
+            submissions_url = self.base_url + '/submissions/{page}/'.format(page=page)
+            r = self.session.get(submissions_url, proxies=PROXIES)
+            assert r.status_code == 200
+            content = r.text
+            d = pq(content)
+            trs = d('table#result-testcases>tbody>tr')
+            for idx, tr in enumerate(trs):
+                i = pq(tr)
+                pass_status = i('tr>td:nth-child(3)').text().strip() == 'Accepted'
+                # TODO: generate the whole downloading list
+                # runText = i('tr>td:nth-child(4)').text().strip()
+                # runTime = -1 if runText == 'N/A' else int(runText[:-3])
+                language = i('tr>td:nth-child(5)').text().strip()
+                capital_title = i('tr>td:nth-child(2)').text().strip()
+                if pass_status and language == self.proglang.language:
+                    if capital_title not in self.solutions:
+                        self.solutions.append(capital_title)
+            next_page_flag = '$(".next").addClass("disabled");' in content
+            if next_page_flag:
+                break
+
     def _generate_items_from_api(self, json_data):
         difficulty = {1: "Easy", 2: "Medium", 3: "Hard"}
         for quiz in json_data['stat_status_pairs']:
@@ -165,6 +216,7 @@ class Leetcode:
                 continue
             data = {}
             data['title'] = quiz['stat']['question__title_slug']
+            data['capital_title'] = quiz['stat']['question__title']
             data['id'] = quiz['stat']['question_id']
             data['lock'] = not json_data['is_paid'] and quiz['paid_only']
             data['difficulty'] = difficulty[quiz['difficulty']['level']]
@@ -194,7 +246,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 (Notes: :lock: means you need to buy a book from Leetcode to unlock the problem)
 
 | # | Title | Source Code | Article | Difficulty |
-|:---:|:---:|:---:|:---:|:---:|'''.format(language=CONFIG['language'],
+|:---:|:---:|:---:|:---:|:---:|'''.format(language=self.proglang.language,
                                           tm=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),
                                           num_solved=self.num_solved, num_total=self.num_total,
                                           num_lock=self.num_lock, repo=CONFIG['repo'])
@@ -206,11 +258,11 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
             if item.lock:
                 language = ':lock:'
             else:
-                if item.pass_status:
+                if item.pass_status and item.capital_title in self.solutions:
                     dirname = '{id}-{title}'.format(id=str(item.id).zfill(3), title=item.title)
-                    language = '[{language}]({repo}/blob/master/{dirname}/{title}.{ext})'.format(language=CONFIG['language'], repo=CONFIG['repo'],
+                    language = '[{language}]({repo}/blob/master/{dirname}/{title}.{ext})'.format(language=self.proglang.language, repo=CONFIG['repo'],
                                                                                                  dirname=dirname, title=item.title,
-                                                                                                 ext=FILE_EXT[CONFIG['language']])
+                                                                                                 ext=self.proglang.ext)
                 else:
                     language = ''
 
@@ -251,10 +303,10 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
             yield data
 
     def _get_quiz_and_code_by_language(self, quiz):
-        submissions_language = [i for i in list(self._generate_submissions_by_quiz(quiz)) if i['language'].lower() == CONFIG['language']]
+        submissions_language = [i for i in list(self._generate_submissions_by_quiz(quiz)) if i['language'].lower() == self.proglang.language]
         submissions = [i for i in submissions_language if i['status']]
         if not submissions:
-            raise Exception('No pass {language} solution in question:{title}'.format(language=CONFIG['language'], title=quiz.title))
+            raise Exception('No pass {language} solution in question:{title}'.format(language=self.proglang.language, title=quiz.title))
 
         if len(submissions) == 1:
             sub = submissions[0]
@@ -278,7 +330,6 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         return question, code
 
     def download_quiz_code_to_dir(self, quiz):
-
         question, code = self._get_quiz_and_code_by_language(quiz)
         if not question and not code:
             return
@@ -287,7 +338,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         check_and_make_dir(dirname)
 
         path = os.path.join(HOME, dirname)
-        fname = '{title}.{ext}'.format(title=quiz.title, ext=FILE_EXT[CONFIG['language']])
+        fname = '{title}.{ext}'.format(title=quiz.title, ext=self.proglang.ext)
         filename = os.path.join(path, fname)
         # quote question
         # quote_question = '\n'.join(['# '+i for i in question.split('\n')])
@@ -295,18 +346,17 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         l = []
         for item in question.split('\n'):
             if item.strip() == '':
-                l.append('//')
+                l.append(self.proglang.annotation)
             else:
-                l.append('// {item}'.format(item=item))
+                l.append('{anno} {item}'.format(anno=self.proglang.annotation, item=item))
         quote_question = '\n'.join(l)
 
         import codecs
         with codecs.open(filename, 'w', 'utf-8') as f:
-            print("begin to write file")
-            content = '// -*- coding:utf-8 -*-'
-            content += '\n'*3
+            print('write to file ->', fname)
+            content = '# -*- coding:utf-8 -*-' + '\n' * 3 if self.proglang.language == 'python' else ''
             content += quote_question
-            content += '\n'*3
+            content += '\n' * 3
             content += code
             content += '\n'
             f.write(content)
@@ -331,8 +381,11 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         if not quiz.pass_status:
             print('{id}-{title} not pass'.format(id=quiz.id, title=quiz.title))
         else:
-            print('{id}-{title} pass'.format(id=quiz.id, title=quiz.title))
-            self.download_quiz_code_to_dir(quiz)
+            if quiz.capital_title not in self.solutions:
+                print('{id}-{title} pass in other language not use {language}'.format(id=quiz.id, title=quiz.title, language=self.proglang.language))
+            else:
+                print('{id}-{title} pass'.format(id=quiz.id, title=quiz.title))
+                self.download_quiz_code_to_dir(quiz)
 
     def download_by_id(self, qid):
         """ download one quiz by quiz id
@@ -377,7 +430,6 @@ def main():
     print('Leetcode finish dowload')
     leetcode.write_readme()
     print('Leetcode finish write readme')
-
 
 if __name__ == '__main__':
     main()
