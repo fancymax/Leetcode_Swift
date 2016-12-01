@@ -1,9 +1,9 @@
 # :pencil2: Leetcode Solutions with swift
-Update time:  2016-12-01 16:36:46
+Update time:  2016-12-01 17:53:34
 
 Auto created by [leetcode_generate](https://github.com/bonfy/leetcode) [Usage](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
 
-I have solved **16   /   429** problems
+I have solved **17   /   429** problems
 while there are **78** problems still locked.
 
 If you have any question, please give me an [issue](https://github.com/fancymax/leetcode_swift/issues).
@@ -41,7 +41,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |25|[reverse-nodes-in-k-group](https://leetcode.com/problems/reverse-nodes-in-k-group)|||Hard|
 |26|[remove-duplicates-from-sorted-array](https://leetcode.com/problems/remove-duplicates-from-sorted-array)||[:memo:](https://leetcode.com/articles/remove-duplicates-sorted-array/)|Easy|
 |27|[remove-element](https://leetcode.com/problems/remove-element)||[:memo:](https://leetcode.com/articles/remove-element/)|Easy|
-|28|[implement-strstr](https://leetcode.com/problems/implement-strstr)|||Easy|
+|28|[implement-strstr](https://leetcode.com/problems/implement-strstr)|[swift](https://github.com/fancymax/leetcode_swift/blob/master/028-implement-strstr/implement-strstr.swift)||Easy|
 |29|[divide-two-integers](https://leetcode.com/problems/divide-two-integers)|||Medium|
 |30|[substring-with-concatenation-of-all-words](https://leetcode.com/problems/substring-with-concatenation-of-all-words)|||Hard|
 |31|[next-permutation](https://leetcode.com/problems/next-permutation)||[:memo:](https://leetcode.com/articles/next-permutation/)|Medium|
