@@ -1,9 +1,9 @@
 # :pencil2: Leetcode Solutions with swift
-Update time:  2016-11-29 14:37:00
+Update time:  2016-12-01 16:36:46
 
 Auto created by [leetcode_generate](https://github.com/bonfy/leetcode) [Usage](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
 
-I have solved **15   /   429** problems
+I have solved **16   /   429** problems
 while there are **78** problems still locked.
 
 If you have any question, please give me an [issue](https://github.com/fancymax/leetcode_swift/issues).
@@ -31,7 +31,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |15|[3sum](https://leetcode.com/problems/3sum)|[swift](https://github.com/fancymax/leetcode_swift/blob/master/015-3sum/3sum.swift)||Medium|
 |16|[3sum-closest](https://leetcode.com/problems/3sum-closest)|||Medium|
 |17|[letter-combinations-of-a-phone-number](https://leetcode.com/problems/letter-combinations-of-a-phone-number)|||Medium|
-|18|[4sum](https://leetcode.com/problems/4sum)|||Medium|
+|18|[4sum](https://leetcode.com/problems/4sum)|[swift](https://github.com/fancymax/leetcode_swift/blob/master/018-4sum/4sum.swift)||Medium|
 |19|[remove-nth-node-from-end-of-list](https://leetcode.com/problems/remove-nth-node-from-end-of-list)||[:memo:](https://leetcode.com/articles/remove-nth-node-end-list/)|Easy|
 |20|[valid-parentheses](https://leetcode.com/problems/valid-parentheses)|||Easy|
 |21|[merge-two-sorted-lists](https://leetcode.com/problems/merge-two-sorted-lists)|||Easy|
