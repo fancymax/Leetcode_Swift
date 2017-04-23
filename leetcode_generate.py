@@ -3,8 +3,8 @@
 #
 # Author: BONFY<foreverbonfy@163.com>
 # Github: https://github.com/bonfy
-# repo:   https://github.com/bonfy/leetcode
-# Usage:  Leetcode solution downloader and auto generate readme 
+# Repo:   https://github.com/bonfy/leetcode
+# Usage:  Leetcode solution downloader and auto generate readme
 #
 
 import requests
@@ -12,13 +12,18 @@ import configparser
 import os
 import json
 import time
-from pyquery import PyQuery as pq
 import re
 import sys
+
+from selenium import webdriver
+from pyquery import PyQuery as pq
+from collections import namedtuple, OrderedDict
 
 
 HOME = os.getcwd()
 CONFIG_FILE = os.path.join(HOME, 'config.cfg')
+COOKIE_PATH = 'cookies.json'
+BASE_URL = 'https://leetcode.com'
 
 # If you have proxy, change PROXIES below
 PROXIES = None
@@ -63,7 +68,6 @@ def rep_unicode_in_code(code):
     """
     Replace unicode to str in the code
     like '\u003D' to '='
-
     :param code: type str
     :return: type str
     """
@@ -79,11 +83,7 @@ def check_and_make_dir(dirname):
         os.mkdir(dirname)
 
 
-class ProgLang:
-    def __init__(self, language, ext, annotation):
-        self.language = language
-        self.ext = ext
-        self.annotation = annotation
+ProgLang = namedtuple('ProgLang', ['language', 'ext', 'annotation'])
 
 ProgLangList = [ProgLang('c++', 'cpp', '//'),
                 ProgLang('java', 'java', '//'),
@@ -93,80 +93,112 @@ ProgLangList = [ProgLang('c++', 'cpp', '//'),
                 ProgLang('javascript', 'js', '//'),
                 ProgLang('ruby', 'rb', '#'),
                 ProgLang('swift', 'swift', '//'),
-                ProgLang('go', 'go', '//')]
+                ProgLang('golang', 'go', '//')]
 
 ProgLangDict = dict((item.language, item) for item in ProgLangList)
 CONFIG = get_config_from_file()
 
-
 class QuizItem:
-    def __init__(self, data):
-        self.id = int(data['id'])
-        self.title = data['title']
-        self.capital_title = data['capital_title']
-        self.url = data['url']
-        self.acceptance = data['acceptance']
-        self.difficulty = data['difficulty']
-        self.lock = data['lock']
-        self.pass_status = True if data['pass'] == 'ac' else False  # 'None', 'ac', 'notac'
-        self.article = data['article']
-        self.sample_code = None
+    """ QuizItem """
+    base_url = BASE_URL
+
+    def __init__(self, **data):
+        self.__dict__.update(data)
+        self.solutions = []
+
+    def __str__(self):
+        return '<Quiz: {question_id}-{question__title_slug}({difficulty})-{is_pass}>'.format(question_id=self.question_id,
+         question__title_slug=self.question__title_slug, difficulty=self.difficulty, is_pass=self.is_pass)
 
     def __repr__(self):
-        return '<Quiz: {id}-{title}({difficulty})-{pass_status}>'.format(
-            id=self.id, title=self.title, difficulty=self.difficulty, pass_status=self.pass_status)
+        return self.__str__()
 
+    @property
+    def json_object(self):
+        addition_properties = ['is_pass', 'difficulty', 'is_lock', 'url', 'acceptance']
+        dct = self.__dict__
+        for prop in addition_properties:
+            dct[prop] = getattr(self, prop)
+        return dct
+
+    @property
+    def is_pass(self):
+        return True if self.status == 'ac' else False
+
+    @property
+    def difficulty(self):
+        difficulty = {1: "Easy", 2: "Medium", 3: "Hard"}
+        return difficulty[self.level]
+
+    @property
+    def is_lock(self):
+        return not self.is_paid and self.paid_only
+
+    @property
+    def url(self):
+        return '{base_url}/problems/{question__title_slug}'.format(base_url=self.base_url,question__title_slug=self.question__title_slug)
+
+    @property
+    def acceptance(self):
+        return '%.1f%%' % (float(self.total_acs) * 100 / float(self.total_submitted))
 
 class Leetcode:
 
     def __init__(self):
+
         self.items = []
+        self.submissions = []
         self.num_solved = 0
         self.num_total = 0
         self.num_lock = 0
 
-        self.solutions = []
-        self.proglang = ProgLangDict[CONFIG['language']]
+        # change proglang to list
+        # config set multi languages
+        self.languages = [x.strip() for x in CONFIG['language'].split(',')]
+        proglangs = [ProgLangDict[x.strip()] for x in CONFIG['language'].split(',')]
+        self.prolangdict = dict(zip(self.languages, proglangs))
 
-        self.base_url = 'https://leetcode.com'
+        self.base_url = BASE_URL
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
         self.session.proxies = PROXIES
         self.cookies = None
-        self.is_login = False
 
     def login(self):
-        login_url = self.base_url + '/accounts/login/'    # NOQA
+        LOGIN_URL = self.base_url + '/accounts/login/'    # NOQA
 
         if not CONFIG['username'] or not CONFIG['password']:
             raise Exception('Leetcode - Please input your username and password in config.cfg.')
 
-        self.session.get(login_url, proxies=PROXIES)
-        token = self.session.cookies['csrftoken']
-        print('token:', token)
-        login_data = {
-            'csrfmiddlewaretoken': token,
-            'login': CONFIG['username'],
-            'password': CONFIG['password']
-        }
+        usr = CONFIG['username']
+        pwd = CONFIG['password']
 
-        self.session.post(login_url, headers={'Referer': login_url}, proxies=PROXIES, data=login_data)
-        if not self.session.cookies.get('PHPSESSID'):
-            raise Exception('Login Error')
+        driver = webdriver.PhantomJS()
+        driver.get(LOGIN_URL)
 
-        self.cookies = dict(self.session.cookies)
-        self.is_login = True
+        driver.find_element_by_id('id_login').send_keys(usr)
+        driver.find_element_by_id('id_password').send_keys(pwd)
+        driver.find_element_by_id('id_remember').click()
+        driver.find_element_by_xpath('//button[@type="submit"]').click()
+        time.sleep(5)
 
-    def load(self):
+        webdriver_cookies = driver.get_cookies()
+
+        if 'LEETCODE_SESSION' not in [cookie['name'] for cookie in webdriver_cookies]:
+            raise Exception('Please check your config or your network.')
+
+        with open(COOKIE_PATH, 'w') as f:
+            json.dump(webdriver_cookies, f, indent=2)
+
+        self.cookies = {str(cookie['name']): str(cookie['value']) for cookie in webdriver_cookies}
+        self.session.cookies.update(self.cookies)
+
+    def load_items_from_api(self):
+        """ load items from api"""
         api_url = self.base_url + '/api/problems/algorithms/'    # NOQA
-
-        if not self.is_login:
-            self.login()
-
         r = self.session.get(api_url, proxies=PROXIES)
         assert r.status_code == 200
         rst = json.loads(r.text)
-
         # make sure your user_name is not None
         # thus the stat_status_pairs is real
         if not rst['user_name']:
@@ -175,145 +207,118 @@ class Leetcode:
         self.num_solved = rst['num_solved']
         self.num_total = rst['num_total']
         self.items = list(self._generate_items_from_api(rst))
+        self.num_lock = len([i for i in self.items if i.is_lock])
         self.items.reverse()
-        self.num_lock = len([i for i in self.items if i.lock])
 
-        # set self.solutions
-        self._load_solutions_by_language()
-
-    def _load_solutions_by_language(self):
-        """only load passed solutions by language
-           set self.solutions
+    def load(self):
         """
-        page = 0
-        while True:
-            page += 1
-            submissions_url = self.base_url + '/submissions/{page}/'.format(page=page)
-            r = self.session.get(submissions_url, proxies=PROXIES)
-            assert r.status_code == 200
-            content = r.text
-            d = pq(content)
-            trs = d('table#result-testcases>tbody>tr')
-            for idx, tr in enumerate(trs):
-                i = pq(tr)
-                pass_status = i('tr>td:nth-child(3)').text().strip() == 'Accepted'
-                # TODO: generate the whole downloading list
-                # runText = i('tr>td:nth-child(4)').text().strip()
-                # runTime = -1 if runText == 'N/A' else int(runText[:-3])
-                language = i('tr>td:nth-child(5)').text().strip()
-                capital_title = i('tr>td:nth-child(2)').text().strip()
-                if pass_status and language == self.proglang.language:
-                    if capital_title not in self.solutions:
-                        self.solutions.append(capital_title)
-            next_page_flag = '$(".next").addClass("disabled");' in content
-            if next_page_flag:
-                break
+        load: all in one
+
+        login -> load api -> load submissions -> solutions to items
+        return `all in one items`
+        """
+        # if cookie is valid, get api_url twice
+        # TODO: here can optimize
+        if not self.is_login:
+            self.login()
+
+        self.load_items_from_api()
+        self.load_submissions()
+        self.load_solutions_to_items()
 
     def _generate_items_from_api(self, json_data):
-        difficulty = {1: "Easy", 2: "Medium", 3: "Hard"}
-        for quiz in json_data['stat_status_pairs']:
+        stat_status_pairs = json_data['stat_status_pairs']
+        for quiz in stat_status_pairs:
             if quiz['stat']['question__hide']:
                 continue
             data = {}
-            data['title'] = quiz['stat']['question__title_slug']
-            data['capital_title'] = quiz['stat']['question__title']
-            data['id'] = quiz['stat']['question_id']
-            data['lock'] = not json_data['is_paid'] and quiz['paid_only']
-            data['difficulty'] = difficulty[quiz['difficulty']['level']]
-            data['favorite'] = quiz['is_favor']
-            data['acceptance'] = "%.1f%%" % (float(quiz['stat']['total_acs']) * 100 / float(quiz['stat']['total_submitted']))
-            data['url'] = '{base}/problems/{title}'.format(base=self.base_url, title=quiz['stat']['question__title_slug'])
-            data['pass'] = quiz['status']
-            data['article'] = quiz['stat']['question__article__slug']
-            item = QuizItem(data)
+            data['question__title_slug'] = quiz['stat']['question__title_slug']
+            data['question__title'] = quiz['stat']['question__title']
+            data['question__article__slug'] = quiz['stat']['question__article__slug']
+            data['is_paid'] = json_data['is_paid']
+            data['paid_only'] = quiz['paid_only']
+            data['level'] = quiz['difficulty']['level']
+            data['is_favor'] = quiz['is_favor']
+            data['total_acs'] = quiz['stat']['total_acs']
+            data['total_submitted'] = quiz['stat']['total_submitted']
+            data['question_id'] = quiz['stat']['question_id']
+            data['status'] = quiz['status']
+            item = QuizItem(**data)
             yield item
 
-    def write_readme(self):
-        """Write Readme to current folder"""
+    @property
+    def is_login(self):
+        """ validate if the cookie exists and not overtime """
+        api_url = self.base_url + '/api/problems/algorithms/'    # NOQA
 
-        md = '''# :pencil2: Leetcode Solutions with {language}
-Update time:  {tm}
+        if not os.path.exists(COOKIE_PATH):
+            return False
+        with open(COOKIE_PATH, 'r') as f:
+            webdriver_cookies = json.load(f)
+        self.cookies = {str(cookie['name']): str(cookie['value']) for cookie in webdriver_cookies}
+        self.session.cookies.update(self.cookies)
+        r = self.session.get(api_url, proxies=PROXIES)
+        if r.status_code != 200:
+            return False
+        data = json.loads(r.text)
+        return 'user_name' in data and data['user_name'] != ''
 
-Auto created by [leetcode_generate](https://github.com/bonfy/leetcode) [Usage](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
-
-I have solved **{num_solved}   /   {num_total}** problems
-while there are **{num_lock}** problems still locked.
-
-If you have any question, please give me an [issue]({repo}/issues).
-
-If you are loving solving problems in leetcode, please contact me to enjoy it together!
-
-(Notes: :lock: means you need to buy a book from Leetcode to unlock the problem)
-
-| # | Title | Source Code | Article | Difficulty |
-|:---:|:---:|:---:|:---:|:---:|'''.format(language=self.proglang.language,
-                                          tm=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),
-                                          num_solved=self.num_solved, num_total=self.num_total,
-                                          num_lock=self.num_lock, repo=CONFIG['repo'])
-        md += '\n'
-        for item in self.items:
-            article = ''
-            if item.article:
-                article = '[:memo:](https://leetcode.com/articles/{article}/)'.format(article=item.article)
-            if item.lock:
-                language = ':lock:'
+    def load_submissions(self):
+        """ load all submissions from leetcode """
+        # set limit a big num
+        limit = 10000
+        while True:
+            submissions_url = '{}/api/submissions/?format=json&limit={}&offset=0'.format(self.base_url, limit)
+            resp = self.session.get(submissions_url, proxies=PROXIES)
+            assert resp.status_code == 200
+            data = resp.json()
+            if 'has_next' not in data.keys():
+                raise Exception('Get submissions wrong, Check network\n')
+            if data['has_next']:
+                limit = 10 * limit
             else:
-                if item.pass_status and item.capital_title in self.solutions:
-                    dirname = '{id}-{title}'.format(id=str(item.id).zfill(3), title=item.title)
-                    language = '[{language}]({repo}/blob/master/{dirname}/{title}.{ext})'.format(language=self.proglang.language, repo=CONFIG['repo'],
-                                                                                                 dirname=dirname, title=item.title,
-                                                                                                 ext=self.proglang.ext)
-                else:
-                    language = ''
+                self.submissions = data['submissions_dump']
+                break
 
-            md += '|{id}|[{title}]({url})|{language}|{article}|{difficulty}|\n'.format(id=item.id, title=item.title,
-                                                                                       url=item.url, language=language,
-                                                                                       article=article, difficulty=item.difficulty)
-        with open('Readme.md', 'w') as f:
-            f.write(md)
-
-    def _generate_submissions_by_quiz(self, quiz):
-        """Get the answer code by quizItem
-        if you have many answers
-        choose the code with min run time
-
-        :param quiz: type QuizItem
+    def load_solutions_to_items(self):
         """
-        submissions_url = 'https://leetcode.com/problems/{title}/submissions/'.format(title=quiz.title)
-        # example : 'https://leetcode.com/problems/two-sum/submissions/'
-        if not quiz.pass_status:
-            raise Exception('Quiz {title} not solve'.format(title=quiz.title))
-        r = self.session.get(submissions_url, proxies=PROXIES)
-        assert r.status_code == 200
-        d = pq(r.text)
-        trs = d('table#result-testcases>tbody>tr')
-        for idx, tr in enumerate(trs):
-            i = pq(tr)
-            subTime = i('tr>td:nth-child(1)').text().strip()
-            question = i('tr>td:nth-child(2)').text().strip()
-            statusText = i('tr>td:nth-child(3)').text().strip()
-            status = True if statusText == 'Accepted' else False
-            url = self.base_url + i('tr>td:nth-child(3) a').attr('href')
-            runText = i('tr>td:nth-child(4)').text().strip()
-            runTime = -1 if runText == 'N/A' else int(runText[:-3])
-            language = i('tr>td:nth-child(5)').text().strip()
+        load all solutions to items
 
-            data = dict(id=idx, subTime=subTime, question=question,
-                        status=status, url=url, runTime=runTime, language=language)
-            yield data
+        combine submission's `runtime` `title` `lang` `submission_url` to items
+        """
+        titles = [i.question__title for i in self.items]
+        itemdict = OrderedDict(zip(titles, self.items))
 
-    def _get_quiz_and_code_by_language(self, quiz):
-        submissions_language = [i for i in list(self._generate_submissions_by_quiz(quiz)) if i['language'].lower() == self.proglang.language]
-        submissions = [i for i in submissions_language if i['status']]
-        if not submissions:
-            raise Exception('No pass {language} solution in question:{title}'.format(language=self.proglang.language, title=quiz.title))
+        make_sub = lambda sub: dict(runtime=int(sub['runtime'][:-3]),
+                                    title = sub['title'],
+                                    lang = sub['lang'],
+                                    submission_url = self.base_url + sub['url'])
+        ac_subs = [make_sub(sub) for sub in self.submissions if sub['status_display'] == 'Accepted']
+        def remain_shortesttime_submissions(submissions):
+            submissions_dict = {}
+            for item in submissions:
+                k = '{}-{}'.format(item['lang'], item['title'])
+                if k not in submissions_dict.keys():
+                    submissions_dict[k] = item
+                else:
+                    old = submissions_dict[k]
+                    if item['runtime'] < old['runtime']:
+                        submissions_dict[k] = item
+            return list(submissions_dict.values())
+        shortest_subs = remain_shortesttime_submissions(ac_subs)
+        for solution in shortest_subs:
+            title = solution['title']
+            if title in itemdict.keys():
+                itemdict[title].solutions.append(solution)
 
-        if len(submissions) == 1:
-            sub = submissions[0]
-        else:
-            sub = min(submissions, key=lambda i: i['runTime'])
-        sub_url = sub['url']
-        r = self.session.get(sub_url, proxies=PROXIES)
+    def _get_code_by_solution(self, solution):
+        """
+        get code by solution
+
+        solution: type dict
+        """
+        solution_url = solution['submission_url']
+        r = self.session.get(solution_url, proxies=PROXIES)
         assert r.status_code == 200
         d = pq(r.text)
         question = d('html>head>meta[name=description]').attr('content').strip()
@@ -323,96 +328,147 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
         code = m1.groupdict()['code'] if m1 else None
 
         if not code:
-            raise Exception('Can not find solution code in question:{title}'.format(title=quiz.title))
+            raise Exception('Can not find solution code in question:{title}'.format(title=solution['title']))
 
         code = rep_unicode_in_code(code)
 
         return question, code
 
-    def download_quiz_code_to_dir(self, quiz):
-        question, code = self._get_quiz_and_code_by_language(quiz)
-        if not question and not code:
+    def _get_code_with_anno(self, solution):
+        question, code = self._get_code_by_solution(solution)
+        language = solution['lang']
+
+        # generate question with anno
+        lines = []
+        for line in question.split('\n'):
+            if line.strip() == '':
+                lines.append(self.prolangdict[language].annotation)
+            else:
+                lines.append('{anno} {line}'.format(anno=self.prolangdict[language].annotation, line=line))
+        quote_question = '\n'.join(lines)
+
+        # generate content
+        content = '# -*- coding:utf-8 -*-' + '\n' * 3 if language == 'python' else ''
+        content += quote_question
+        content += '\n' * 3
+        content += code
+        content += '\n'
+
+        return content
+
+    def _download_code_by_quiz(self, quiz):
+        """
+        Download code by quiz
+        quiz: type QuizItem
+        """
+        qid = quiz.question_id
+        qtitle = quiz.question__title_slug
+        slts = list(filter(lambda i: i['lang'] in self.languages, quiz.solutions))
+
+        if not slts:
+            print('No solution with the set languages in question:{}-{}'.format(qid, qtitle))
             return
-        dirname = '{id}-{title}'.format(id=str(quiz.id).zfill(3), title=quiz.title)
+
+        dirname = '{id}-{title}'.format(id=str(qid).zfill(3), title=qtitle)
         print('begin download ' + dirname)
         check_and_make_dir(dirname)
 
         path = os.path.join(HOME, dirname)
-        fname = '{title}.{ext}'.format(title=quiz.title, ext=self.proglang.ext)
-        filename = os.path.join(path, fname)
-        # quote question
-        # quote_question = '\n'.join(['# '+i for i in question.split('\n')])
+        for slt in slts:
+            fname = '{title}.{ext}'.format(title=qtitle, ext=self.prolangdict[slt['lang']].ext)
+            filename = os.path.join(path, fname)
+            content = self._get_code_with_anno(slt)
+            import codecs
+            with codecs.open(filename, 'w', 'utf-8') as f:
+                print('write to file ->', fname)
+                f.write(content)
 
-        l = []
-        for item in question.split('\n'):
-            if item.strip() == '':
-                l.append(self.proglang.annotation)
-            else:
-                l.append('{anno} {item}'.format(anno=self.proglang.annotation, item=item))
-        quote_question = '\n'.join(l)
-
-        import codecs
-        with codecs.open(filename, 'w', 'utf-8') as f:
-            print('write to file ->', fname)
-            content = '# -*- coding:utf-8 -*-' + '\n' * 3 if self.proglang.language == 'python' else ''
-            content += quote_question
-            content += '\n' * 3
-            content += code
-            content += '\n'
-            f.write(content)
-
-    def _get_quiz_by_id(self, qid):
-        """ get quiz by quiz id
-
-        :param qid: type int
+    def _find_item_by_quiz_id(self, qid):
         """
-        if not self.items:
-            raise Exception("Please load self info first")
-        for quiz in self.items:
-            if quiz.id == qid:
-                return quiz
-        raise Exception("No quiz id:{id} find in leetcode.please confirm".format(id=qid))
-
-    def _download_quiz(self, quiz):
-        """ download quiz by QuizItem
-
-        :param quiz: type QuizItem
+        find the item by quiz id
         """
-        if not quiz.pass_status:
-            print('{id}-{title} not pass'.format(id=quiz.id, title=quiz.title))
-        else:
-            if quiz.capital_title not in self.solutions:
-                print('{id}-{title} pass in other language not use {language}'.format(id=quiz.id, title=quiz.title, language=self.proglang.language))
-            else:
-                print('{id}-{title} pass'.format(id=quiz.id, title=quiz.title))
-                self.download_quiz_code_to_dir(quiz)
+        lst = list(filter(lambda x: x.question_id == qid, self.items))
+        if len(lst) == 1:
+            return lst[0]
+        print('No exits quiz id:', qid)
 
     def download_by_id(self, qid):
-        """ download one quiz by quiz id
-
-        :param qid: type int
-        """
-        quiz = self._get_quiz_by_id(qid)
-        self._download_quiz(quiz)
+        quiz = self._find_item_by_quiz_id(qid)
+        if quiz:
+            self._download_code_by_quiz(quiz)
 
     def download(self):
-        """ download all quiz with single thread """
-        for quiz in self.items:
-            self._download_quiz(quiz)
+        """ download all solutions with single thread """
+        ac_items = [i for i in self.items if i.is_pass]
+        for quiz in ac_items:
+            self._download_code_by_quiz(quiz)
 
     def download_with_thread_pool(self):
-        """ download all quiz with multi thread """
+        """ download all solutions with multi thread """
+        ac_items = [i for i in self.items if i.is_pass]
+
         from concurrent.futures import ThreadPoolExecutor
         pool = ThreadPoolExecutor(max_workers=4)
-        for quiz in self.items:
-            pool.submit(self._download_quiz, quiz)
+        for quiz in ac_items:
+            pool.submit(self._download_code_by_quiz, quiz)
         pool.shutdown(wait=True)
+
+    def write_readme(self):
+        """Write Readme to current folder"""
+        languages_readme = ','.join([x.capitalize() for x in self.languages])
+        md = '''# :pencil2: Leetcode Solutions with {language}
+Update time:  {tm}
+
+Auto created by [leetcode_generate](https://github.com/bonfy/leetcode)
+
+I have solved **{num_solved}   /   {num_total}** problems
+while there are **{num_lock}** problems still locked.
+
+If you want to use this tool please follow this [Usage Guide](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
+
+If you have any question, please give me an [issue]({repo}/issues).
+
+If you are loving solving problems in leetcode, please contact me to enjoy it together!
+
+(Notes: :lock: means you need to buy a book from Leetcode to unlock the problem)
+
+| # | Title | Source Code | Article | Difficulty |
+|:---:|:---:|:---:|:---:|:---:|'''.format(language=languages_readme,
+                                          tm=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),
+                                          num_solved=self.num_solved, num_total=self.num_total,
+                                          num_lock=self.num_lock, repo=CONFIG['repo'])
+        md += '\n'
+        for item in self.items:
+            article = ''
+            if item.question__article__slug:
+                article = '[:memo:](https://leetcode.com/articles/{article}/)'.format(article=item.question__article__slug)
+            if item.is_lock:
+                language = ':lock:'
+            else:
+                if item.solutions:
+                    dirname = '{id}-{title}'.format(id=str(item.question_id).zfill(3), title=item.question__title_slug)
+                    language = ''
+                    language_lst = [i['lang'] for i in item.solutions if i['lang'] in self.languages]
+                    while language_lst:
+                        lan = language_lst.pop()
+                        language += '[{language}]({repo}/blob/master/{dirname}/{title}.{ext})'.format(language=lan.capitalize(), repo=CONFIG['repo'],
+                                                                                                 dirname=dirname, title=item.question__title_slug,
+                                                                                                 ext=self.prolangdict[lan].ext)
+                        language += ' '
+                else:
+                    language = ''
+
+            language = language.strip()
+            md += '|{id}|[{title}]({url})|{language}|{article}|{difficulty}|\n'.format(id=item.question_id, title=item.question__title_slug,
+                                                                                       url=item.url, language=language,
+                                                                                       article=article, difficulty=item.difficulty)
+        with open('Readme.md', 'w') as f:
+            f.write(md)
 
 
 def main():
     leetcode = Leetcode()
-    leetcode.login()
-    print('Leetcode login')
+
     leetcode.load()
     print('Leetcode load self info')
 
@@ -424,12 +480,13 @@ def main():
         leetcode.download_with_thread_pool()
     else:
         for qid in sys.argv[1:]:
-            print('begin leetcode by id: {id}'.format(id=qid))
+            print('begin leetcode by id: {id}'.format(id=sid))
             leetcode.download_by_id(int(qid))
 
     print('Leetcode finish dowload')
     leetcode.write_readme()
     print('Leetcode finish write readme')
+
 
 if __name__ == '__main__':
     main()
