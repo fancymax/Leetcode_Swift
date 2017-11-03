@@ -12,11 +12,12 @@ import configparser
 import os
 import json
 import time
+import datetime
 import re
 import sys
+import html
 
 from selenium import webdriver
-from pyquery import PyQuery as pq
 from collections import namedtuple, OrderedDict
 
 
@@ -47,7 +48,12 @@ def get_config_from_file():
         raise Exception('Please create config.cfg first.')
 
     username = cp.get('leetcode', 'username')
+    if os.getenv('leetcode_username'):
+        username = os.getenv('leetcode_username')
+
     password = cp.get('leetcode', 'password')
+    if os.getenv('leetcode_password'):
+        password = os.getenv('leetcode_password')
 
     if not username or not password:    # username and password not none
         raise Exception('Please input your username and password in config.cfg.')
@@ -85,11 +91,12 @@ def check_and_make_dir(dirname):
 
 ProgLang = namedtuple('ProgLang', ['language', 'ext', 'annotation'])
 
-ProgLangList = [ProgLang('c++', 'cpp', '//'),
+ProgLangList = [ProgLang('cpp', 'cpp', '//'),
                 ProgLang('java', 'java', '//'),
                 ProgLang('python', 'py', '#'),
+                ProgLang('python3', 'py', '#'),
                 ProgLang('c', 'c', '//'),
-                ProgLang('c#', 'cs', '//'),
+                ProgLang('csharp', 'cs', '//'),
                 ProgLang('javascript', 'js', '//'),
                 ProgLang('ruby', 'rb', '#'),
                 ProgLang('swift', 'swift', '//'),
@@ -203,6 +210,8 @@ class Leetcode:
         # thus the stat_status_pairs is real
         if not rst['user_name']:
             raise Exception("Something wrong with your personal info.\n")
+
+        self.items = []  # destroy first ; for sake maybe needn't
 
         self.num_solved = rst['num_solved']
         self.num_total = rst['num_total']
@@ -320,8 +329,16 @@ class Leetcode:
         solution_url = solution['submission_url']
         r = self.session.get(solution_url, proxies=PROXIES)
         assert r.status_code == 200
-        d = pq(r.text)
-        question = d('html>head>meta[name=description]').attr('content').strip()
+
+        pattern = re.compile(r'<meta name=\"description\" content=\"(?P<question>.*)\" />\n    <meta property=\"og:image\"', re.S)
+        m1 = pattern.search(r.text)
+        question = m1.groupdict()['question'] if m1 else None
+
+        if not question:
+            raise Exception('Can not find question descript in question:{title}'.format(title=solution['title']))
+
+        # html.unescape to remove &quot; &#39;
+        question = html.unescape(question)
 
         pattern = re.compile(r'submissionCode: \'(?P<code>.*)\',\n  editCodeUrl', re.S)
         m1 = pattern.search(r.text)
@@ -462,13 +479,21 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
             md += '|{id}|[{title}]({url})|{language}|{article}|{difficulty}|\n'.format(id=item.question_id, title=item.question__title_slug,
                                                                                        url=item.url, language=language,
                                                                                        article=article, difficulty=item.difficulty)
-        with open('Readme.md', 'w') as f:
+        with open('README.md', 'w') as f:
             f.write(md)
 
+    def push_to_github(self):
+        strdate = datetime.datetime.now().strftime('%Y-%m-%d')
+        cmd_git_add = 'git add .'
+        cmd_git_commit = 'git commit -m "update at {date}"'.format(date=strdate)
+        cmd_git_push = 'git push -u origin master'
 
-def main():
-    leetcode = Leetcode()
+        os.system(cmd_git_add)
+        os.system(cmd_git_commit)
+        os.system(cmd_git_push)
 
+
+def do_job(leetcode):
     leetcode.load()
     print('Leetcode load self info')
 
@@ -480,13 +505,18 @@ def main():
         leetcode.download_with_thread_pool()
     else:
         for qid in sys.argv[1:]:
-            print('begin leetcode by id: {id}'.format(id=sid))
+            print('begin leetcode by id: {id}'.format(id=qid))
             leetcode.download_by_id(int(qid))
 
     print('Leetcode finish dowload')
     leetcode.write_readme()
     print('Leetcode finish write readme')
+    leetcode.push_to_github()
+    print('push to github')
 
 
 if __name__ == '__main__':
-    main()
+    leetcode = Leetcode()
+    while True:
+        do_job(leetcode)
+        time.sleep(24 * 60 * 60)
