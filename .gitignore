@@ -1,7 +1,9 @@
 config.cfg
 
 ghostdriver.log
-.vscode/
+
+/.vscode/
+
 cookies.json
 cookies.log
 leetcode-env/
