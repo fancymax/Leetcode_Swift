@@ -2,8 +2,11 @@ config.cfg
 
 ghostdriver.log
 
-/.vscode/
+cookies.json
+
+cookies.log
+
+venv/
 
 cookies.json
-cookies.log
-leetcode-env/
+
