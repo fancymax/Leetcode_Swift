@@ -1,9 +1,9 @@
 # :pencil2: Leetcode Solutions with Swift,Csharp,Cpp
-Update time:  2018-05-26 21:37:52
+Update time:  2018-06-06 21:31:20
 
 Auto created by [leetcode_generate](https://github.com/bonfy/leetcode)
 
-I have solved **19   /   754** problems
+I have solved **21   /   762** problems
 while there are **133** problems still locked.
 
 If you want to use this tool please follow this [Usage Guide](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
@@ -30,7 +30,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |12|[integer-to-roman](https://leetcode.com/problems/integer-to-roman)|||Medium|
 |13|[roman-to-integer](https://leetcode.com/problems/roman-to-integer)|||Easy|
 |14|[longest-common-prefix](https://leetcode.com/problems/longest-common-prefix)||[:memo:](https://leetcode.com/articles/longest-common-prefix/)|Easy|
-|15|[3sum](https://leetcode.com/problems/3sum)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cpp) [Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cs) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.swift)||Medium|
+|15|[3sum](https://leetcode.com/problems/3sum)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cpp) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.swift) [Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cs)||Medium|
 |16|[3sum-closest](https://leetcode.com/problems/3sum-closest)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/016-3sum-closest/3sum-closest.cs)||Medium|
 |17|[letter-combinations-of-a-phone-number](https://leetcode.com/problems/letter-combinations-of-a-phone-number)|||Medium|
 |18|[4sum](https://leetcode.com/problems/4sum)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/018-4sum/4sum.swift)||Medium|
@@ -184,7 +184,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |166|[fraction-to-recurring-decimal](https://leetcode.com/problems/fraction-to-recurring-decimal)||[:memo:](https://leetcode.com/articles/fraction-recurring-decimal/)|Medium|
 |167|[two-sum-ii-input-array-is-sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/167-two-sum-ii-input-array-is-sorted/two-sum-ii-input-array-is-sorted.swift)|[:memo:](https://leetcode.com/articles/two-sum-ii-input-array-sorted/)|Easy|
 |168|[excel-sheet-column-title](https://leetcode.com/problems/excel-sheet-column-title)|||Easy|
-|169|[majority-element](https://leetcode.com/problems/majority-element)||[:memo:](https://leetcode.com/articles/majority-element/)|Easy|
+|169|[majority-element](https://leetcode.com/problems/majority-element)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/169-majority-element/majority-element.cpp)|[:memo:](https://leetcode.com/articles/majority-element/)|Easy|
 |170|[two-sum-iii-data-structure-design](https://leetcode.com/problems/two-sum-iii-data-structure-design)|:lock:||Easy|
 |171|[excel-sheet-column-number](https://leetcode.com/problems/excel-sheet-column-number)|||Easy|
 |172|[factorial-trailing-zeroes](https://leetcode.com/problems/factorial-trailing-zeroes)|||Easy|
@@ -770,3 +770,11 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |867|[new-21-game](https://leetcode.com/problems/new-21-game)||[:memo:](https://leetcode.com/articles/new-21-game/)|Medium|
 |868|[push-dominoes](https://leetcode.com/problems/push-dominoes)||[:memo:](https://leetcode.com/articles/push-dominoes/)|Medium|
 |869|[similar-string-groups](https://leetcode.com/problems/similar-string-groups)||[:memo:](https://leetcode.com/articles/similar-string-groups/)|Hard|
+|870|[magic-squares-in-grid](https://leetcode.com/problems/magic-squares-in-grid)||[:memo:](https://leetcode.com/articles/magic-squares-in-grid/)|Easy|
+|871|[keys-and-rooms](https://leetcode.com/problems/keys-and-rooms)||[:memo:](https://leetcode.com/articles/keys-and-rooms/)|Medium|
+|872|[split-array-into-fibonacci-sequence](https://leetcode.com/problems/split-array-into-fibonacci-sequence)||[:memo:](https://leetcode.com/articles/split-array-into-fibonacci-sequence/)|Medium|
+|873|[guess-the-word](https://leetcode.com/problems/guess-the-word)||[:memo:](https://leetcode.com/articles/guess-the-word/)|Hard|
+|874|[backspace-string-compare](https://leetcode.com/problems/backspace-string-compare)||[:memo:](https://leetcode.com/articles/backspace-string-compare/)|Easy|
+|875|[longest-mountain-in-array](https://leetcode.com/problems/longest-mountain-in-array)||[:memo:](https://leetcode.com/articles/longest-mountain-in-array/)|Medium|
+|876|[hand-of-straights](https://leetcode.com/problems/hand-of-straights)||[:memo:](https://leetcode.com/articles/hand-of-straights/)|Medium|
+|877|[shortest-path-visiting-all-nodes](https://leetcode.com/problems/shortest-path-visiting-all-nodes)||[:memo:](https://leetcode.com/articles/shortest-path-visiting-all-nodes/)|Hard|
