@@ -26,37 +26,40 @@
  * }
  */
 class Solution {
-       func minMeetingRooms(_ intervals: [Interval]) -> Int {
-          var roomChnage = [Int:Int]()
-        for interval in intervals {
-            if let _ = roomChnage[interval.start] {
-                roomChnage[interval.start]! += 1
-            }
-            else {
-                roomChnage[interval.start] = 1
-            }
-            
-            if let _ = roomChnage[interval.end] {
-                roomChnage[interval.end]! -= 1
-            }
-            else {
-                roomChnage[interval.end] = -1
-            }
+    struct RoomStatus {
+        var time:Int
+        var status:Int
+        
+        public init(_ time: Int, _ status: Int) {
+            self.time = time
+            self.status = status
+        }
+    }
+    
+    func minMeetingRooms(_ intervals: [Interval]) -> Int {
+        var rooms:[RoomStatus] = intervals.map { (interval) -> RoomStatus in
+            return RoomStatus(interval.start, 1)
+        }
+        let closed = intervals.map { (interval) -> RoomStatus in
+            return RoomStatus(interval.end, -1)
         }
         
-        let sortedRoomChange = roomChnage.sorted { (v1, v2) -> Bool in
-            return v1.key < v2.key
+        rooms.append(contentsOf: closed)
+        rooms.sort { (r1, r2) -> Bool in
+            if r1.time == r2.time {
+                return r1.status < r2.status
+            }
+            return r1.time < r2.time
         }
         
         var maxRoom = 0
-        var room = 0
-        for changeRoomItem in sortedRoomChange {
-            room += changeRoomItem.value
-            maxRoom = max(maxRoom, room)
+        var usedRooms = 0
+        for i in 0..<rooms.count {
+            usedRooms += rooms[i].status
+            maxRoom = max(maxRoom, usedRooms)
         }
-      
+   
         return maxRoom
     }
-    
-   
+
 }
