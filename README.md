@@ -1,9 +1,9 @@
 # :pencil2: Leetcode Solutions with Swift,Csharp,Cpp,C
-Update time:  2018-06-22 21:37:48
+Update time:  2018-06-23 14:22:19
 
 Auto created by [leetcode_generate](https://github.com/bonfy/leetcode)
 
-I have solved **52   /   770** problems
+I have solved **55   /   770** problems
 while there are **133** problems still locked.
 
 If you want to use this tool please follow this [Usage Guide](https://github.com/bonfy/leetcode/blob/master/README_leetcode_generate.md)
@@ -17,8 +17,8 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 | # | Title | Source Code | Article | Difficulty |
 |:---:|:---:|:---:|:---:|:---:|
 |1|[two-sum](https://leetcode.com/problems/two-sum)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/001-two-sum/two-sum.cs) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/001-two-sum/two-sum.swift)|[:memo:](https://leetcode.com/articles/two-sum/)|Easy|
-|2|[add-two-numbers](https://leetcode.com/problems/add-two-numbers)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/002-add-two-numbers/add-two-numbers.cpp) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/002-add-two-numbers/add-two-numbers.swift)|[:memo:](https://leetcode.com/articles/add-two-numbers/)|Medium|
-|3|[longest-substring-without-repeating-characters](https://leetcode.com/problems/longest-substring-without-repeating-characters)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/003-longest-substring-without-repeating-characters/longest-substring-without-repeating-characters.cpp) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/003-longest-substring-without-repeating-characters/longest-substring-without-repeating-characters.swift)|[:memo:](https://leetcode.com/articles/longest-substring-without-repeating-characters/)|Medium|
+|2|[add-two-numbers](https://leetcode.com/problems/add-two-numbers)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/002-add-two-numbers/add-two-numbers.swift) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/002-add-two-numbers/add-two-numbers.cpp)|[:memo:](https://leetcode.com/articles/add-two-numbers/)|Medium|
+|3|[longest-substring-without-repeating-characters](https://leetcode.com/problems/longest-substring-without-repeating-characters)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/003-longest-substring-without-repeating-characters/longest-substring-without-repeating-characters.swift) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/003-longest-substring-without-repeating-characters/longest-substring-without-repeating-characters.cpp)|[:memo:](https://leetcode.com/articles/longest-substring-without-repeating-characters/)|Medium|
 |4|[median-of-two-sorted-arrays](https://leetcode.com/problems/median-of-two-sorted-arrays)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/004-median-of-two-sorted-arrays/median-of-two-sorted-arrays.swift) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/004-median-of-two-sorted-arrays/median-of-two-sorted-arrays.cpp)|[:memo:](https://leetcode.com/articles/median-of-two-sorted-arrays/)|Hard|
 |5|[longest-palindromic-substring](https://leetcode.com/problems/longest-palindromic-substring)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/005-longest-palindromic-substring/longest-palindromic-substring.cpp)|[:memo:](https://leetcode.com/articles/longest-palindromic-substring/)|Medium|
 |6|[zigzag-conversion](https://leetcode.com/problems/zigzag-conversion)||[:memo:](https://leetcode.com/articles/zigzag-conversion/)|Medium|
@@ -30,7 +30,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |12|[integer-to-roman](https://leetcode.com/problems/integer-to-roman)|||Medium|
 |13|[roman-to-integer](https://leetcode.com/problems/roman-to-integer)|||Easy|
 |14|[longest-common-prefix](https://leetcode.com/problems/longest-common-prefix)||[:memo:](https://leetcode.com/articles/longest-common-prefix/)|Easy|
-|15|[3sum](https://leetcode.com/problems/3sum)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cpp) [Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cs) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.swift)||Medium|
+|15|[3sum](https://leetcode.com/problems/3sum)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cs) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.cpp) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/015-3sum/3sum.swift)||Medium|
 |16|[3sum-closest](https://leetcode.com/problems/3sum-closest)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/016-3sum-closest/3sum-closest.cs)||Medium|
 |17|[letter-combinations-of-a-phone-number](https://leetcode.com/problems/letter-combinations-of-a-phone-number)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/017-letter-combinations-of-a-phone-number/letter-combinations-of-a-phone-number.cpp)||Medium|
 |18|[4sum](https://leetcode.com/problems/4sum)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/018-4sum/4sum.swift)||Medium|
@@ -71,13 +71,13 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |53|[maximum-subarray](https://leetcode.com/problems/maximum-subarray)|||Easy|
 |54|[spiral-matrix](https://leetcode.com/problems/spiral-matrix)||[:memo:](https://leetcode.com/articles/spiral-matrix/)|Medium|
 |55|[jump-game](https://leetcode.com/problems/jump-game)||[:memo:](https://leetcode.com/articles/jump-game/)|Medium|
-|56|[merge-intervals](https://leetcode.com/problems/merge-intervals)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/056-merge-intervals/merge-intervals.cs) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/056-merge-intervals/merge-intervals.cpp)|[:memo:](https://leetcode.com/articles/merge-intervals/)|Medium|
+|56|[merge-intervals](https://leetcode.com/problems/merge-intervals)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/056-merge-intervals/merge-intervals.cpp) [Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/056-merge-intervals/merge-intervals.cs)|[:memo:](https://leetcode.com/articles/merge-intervals/)|Medium|
 |57|[insert-interval](https://leetcode.com/problems/insert-interval)|||Hard|
 |58|[length-of-last-word](https://leetcode.com/problems/length-of-last-word)|||Easy|
 |59|[spiral-matrix-ii](https://leetcode.com/problems/spiral-matrix-ii)|||Medium|
 |60|[permutation-sequence](https://leetcode.com/problems/permutation-sequence)|||Medium|
 |61|[rotate-list](https://leetcode.com/problems/rotate-list)|||Medium|
-|62|[unique-paths](https://leetcode.com/problems/unique-paths)|||Medium|
+|62|[unique-paths](https://leetcode.com/problems/unique-paths)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/062-unique-paths/unique-paths.cpp)||Medium|
 |63|[unique-paths-ii](https://leetcode.com/problems/unique-paths-ii)|||Medium|
 |64|[minimum-path-sum](https://leetcode.com/problems/minimum-path-sum)||[:memo:](https://leetcode.com/articles/minimum-path-sum/)|Medium|
 |65|[valid-number](https://leetcode.com/problems/valid-number)|||Hard|
@@ -117,7 +117,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |99|[recover-binary-search-tree](https://leetcode.com/problems/recover-binary-search-tree)|||Hard|
 |100|[same-tree](https://leetcode.com/problems/same-tree)|||Easy|
 |101|[symmetric-tree](https://leetcode.com/problems/symmetric-tree)||[:memo:](https://leetcode.com/articles/symmetric-tree/)|Easy|
-|102|[binary-tree-level-order-traversal](https://leetcode.com/problems/binary-tree-level-order-traversal)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/102-binary-tree-level-order-traversal/binary-tree-level-order-traversal.cpp) [Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/102-binary-tree-level-order-traversal/binary-tree-level-order-traversal.swift)||Medium|
+|102|[binary-tree-level-order-traversal](https://leetcode.com/problems/binary-tree-level-order-traversal)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/102-binary-tree-level-order-traversal/binary-tree-level-order-traversal.swift) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/102-binary-tree-level-order-traversal/binary-tree-level-order-traversal.cpp)||Medium|
 |103|[binary-tree-zigzag-level-order-traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal)|||Medium|
 |104|[maximum-depth-of-binary-tree](https://leetcode.com/problems/maximum-depth-of-binary-tree)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/104-maximum-depth-of-binary-tree/maximum-depth-of-binary-tree.cpp)||Easy|
 |105|[construct-binary-tree-from-preorder-and-inorder-traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal)|||Medium|
@@ -136,7 +136,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |118|[pascals-triangle](https://leetcode.com/problems/pascals-triangle)||[:memo:](https://leetcode.com/articles/pascals-triangle/)|Easy|
 |119|[pascals-triangle-ii](https://leetcode.com/problems/pascals-triangle-ii)|||Easy|
 |120|[triangle](https://leetcode.com/problems/triangle)|||Medium|
-|121|[best-time-to-buy-and-sell-stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/121-best-time-to-buy-and-sell-stock/best-time-to-buy-and-sell-stock.cpp) [Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/121-best-time-to-buy-and-sell-stock/best-time-to-buy-and-sell-stock.cs)|[:memo:](https://leetcode.com/articles/best-time-to-buy-and-sell-stock/)|Easy|
+|121|[best-time-to-buy-and-sell-stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock)|[Csharp](https://github.com/fancymax/Leetcode_Swift/blob/master/121-best-time-to-buy-and-sell-stock/best-time-to-buy-and-sell-stock.cs) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/121-best-time-to-buy-and-sell-stock/best-time-to-buy-and-sell-stock.cpp)|[:memo:](https://leetcode.com/articles/best-time-to-buy-and-sell-stock/)|Easy|
 |122|[best-time-to-buy-and-sell-stock-ii](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii)||[:memo:](https://leetcode.com/articles/best-time-to-buy-and-sell-stock-ii/)|Easy|
 |123|[best-time-to-buy-and-sell-stock-iii](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii)|||Hard|
 |124|[binary-tree-maximum-path-sum](https://leetcode.com/problems/binary-tree-maximum-path-sum)|||Hard|
@@ -298,7 +298,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |297|[serialize-and-deserialize-binary-tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree)|||Hard|
 |298|[binary-tree-longest-consecutive-sequence](https://leetcode.com/problems/binary-tree-longest-consecutive-sequence)|:lock:|[:memo:](https://leetcode.com/articles/binary-tree-longest-consecutive-sequence/)|Medium|
 |299|[bulls-and-cows](https://leetcode.com/problems/bulls-and-cows)|||Medium|
-|300|[longest-increasing-subsequence](https://leetcode.com/problems/longest-increasing-subsequence)||[:memo:](https://leetcode.com/articles/longest-increasing-subsequence/)|Medium|
+|300|[longest-increasing-subsequence](https://leetcode.com/problems/longest-increasing-subsequence)|[Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/300-longest-increasing-subsequence/longest-increasing-subsequence.cpp)|[:memo:](https://leetcode.com/articles/longest-increasing-subsequence/)|Medium|
 |301|[remove-invalid-parentheses](https://leetcode.com/problems/remove-invalid-parentheses)|||Hard|
 |302|[smallest-rectangle-enclosing-black-pixels](https://leetcode.com/problems/smallest-rectangle-enclosing-black-pixels)|:lock:|[:memo:](https://leetcode.com/articles/smallest-rectangle-enclosing-black-pixels/)|Hard|
 |303|[range-sum-query-immutable](https://leetcode.com/problems/range-sum-query-immutable)||[:memo:](https://leetcode.com/articles/range-sum-query-immutable/)|Easy|
@@ -320,7 +320,7 @@ If you are loving solving problems in leetcode, please contact me to enjoy it to
 |319|[bulb-switcher](https://leetcode.com/problems/bulb-switcher)|||Medium|
 |320|[generalized-abbreviation](https://leetcode.com/problems/generalized-abbreviation)|:lock:|[:memo:](https://leetcode.com/articles/generalized-abbreviation/)|Medium|
 |321|[create-maximum-number](https://leetcode.com/problems/create-maximum-number)|||Hard|
-|322|[coin-change](https://leetcode.com/problems/coin-change)||[:memo:](https://leetcode.com/articles/coin-change/)|Medium|
+|322|[coin-change](https://leetcode.com/problems/coin-change)|[Swift](https://github.com/fancymax/Leetcode_Swift/blob/master/322-coin-change/coin-change.swift) [Cpp](https://github.com/fancymax/Leetcode_Swift/blob/master/322-coin-change/coin-change.cpp)|[:memo:](https://leetcode.com/articles/coin-change/)|Medium|
 |323|[number-of-connected-components-in-an-undirected-graph](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph)|:lock:||Medium|
 |324|[wiggle-sort-ii](https://leetcode.com/problems/wiggle-sort-ii)|||Medium|
 |325|[maximum-size-subarray-sum-equals-k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k)|:lock:||Medium|
