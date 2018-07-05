@@ -33,28 +33,39 @@
  * };
  */
 class Solution {
-private:
-    void explore(TreeNode* node,vector<vector<int>>& levelValues, int level) {
-        if (!node) {
-            return;
-        }
-        
-        if (level >= levelValues.size()) {
-            levelValues.push_back({});
-        }
-        levelValues[level].push_back(node->val);
-        
-        explore(node->left, levelValues, level + 1);
-        explore(node->right, levelValues, level + 1);
-    }
 public:
     vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> result;
         
-        vector<vector<int>> levels = {};
-        int level = 0;
+        queue<TreeNode*> queueTree;
+        queue<int> queueLevel;
+        queueTree.push(root);
+        queueLevel.push(0);
         
-        explore(root, levels, level);
-
-        return levels;
+        while (!queueTree.empty()) {
+            TreeNode* node = queueTree.front();
+            queueTree.pop();
+            
+            int level = queueLevel.front();
+            queueLevel.pop();
+            
+            if (node == NULL) {
+                continue;
+            }
+            
+            if (level + 1 > result.size()) {
+                result.push_back({node->val});
+            }
+            else {
+                result[level].emplace_back(node->val);
+            }
+            
+            queueTree.push(node->left);
+            queueTree.push(node->right);
+            queueLevel.push(level + 1);
+            queueLevel.push(level + 1);
+        }
+        
+        return result;
     }
 };
