@@ -54,28 +54,8 @@ public:
                 res.append(to_string(node->val));
                 res.append(",");
                 
-                bool isLast = false;
-                // if (!remainNodes.empty()) {
-                //     TreeNode* lastNode = remainNodes.front();
-                //     if (lastNode != NULL) {
-                //         if ((lastNode->left == NULL)&& (lastNode->right == NULL)) {
-                //             isLast = true;
-                //         }
-                //     }
-                //     else {
-                //         isLast = true;
-                //     }
-                // }
-                // else {
-                //     isLast = true;
-                // }
-                
-                if ((node->left != NULL)|| (!isLast)) {
-                    remainNodes.push(node->left);
-                }
-                if ((node->right != NULL) || (!isLast)) {
-                    remainNodes.push(node->right);
-                }
+                remainNodes.push(node->left);
+                remainNodes.push(node->right);
             }
         }
         

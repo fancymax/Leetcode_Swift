@@ -26,20 +26,19 @@
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        if (prices.size() == 0) {
+        if (prices.size() <= 1) {
             return 0;
         }
-        int minPrice = INT_MAX;
-        int result = 0;
-        for (int i =0; i < prices.size(); i++) {
+        
+        int minPrice = prices[0];
+        int maxProfit = 0;
+        for (int i = 1; i < prices.size(); i++) {
+            maxProfit = max(maxProfit, prices[i] - minPrice);
             if (prices[i] < minPrice) {
                 minPrice = prices[i];
             }
-            //E(i) = max(E(i - 1),(prices[i] - minPrice) )
-            result = max(result, prices[i] - minPrice);
         }
         
-        return result;
-
+        return maxProfit;
     }
 };

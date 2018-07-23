@@ -45,7 +45,7 @@ public:
                 return  false;
             }
             for (int i = 0; i < s.length(); i++) {
-                if (!isCharTheSame(s[i], t[i])) {
+                if (s[i] != t[i]) {
                     changeTimes += 1;
                 }
                 
@@ -73,7 +73,7 @@ public:
                     t1 = t[i];
                 }
                 
-                if (!isCharTheSame(s1,t1)) {
+                if (s1 != t1) {
                     changeTimes += 1;
                 }
                 
@@ -96,12 +96,4 @@ public:
 
     }
     
-    bool isCharTheSame(char s1,char t1) {
-        if (s1 == t1){
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 };

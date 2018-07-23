@@ -35,29 +35,35 @@
 
 
 class Solution {
-private:
-    void backtrack(vector<vector<int>>& result,vector<int>& temp,vector<int>& nums, int remain,int start) {
-        if (remain < 0) {
-        }
-        else if (remain == 0 ) {
-            vector<int > v1(temp);
-            result.push_back(v1);
-        }
-        else {
-            for (int i = start; i < nums.size(); i++) {
-                temp.push_back(nums[i]);
-                backtrack(result, temp, nums, remain - nums[i], i);
-                temp.pop_back();
-            }
-        }
-    }
 public:
     vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        vector<vector<int>> res = {};
-        vector<int> temp = {};
-        backtrack(res, temp, candidates, target, 0);
+        return helper(candidates,target,0);
+    }
+    
+    vector<vector<int>> helper(vector<int>& candidates, int target, int start) {
+        vector<vector<int>> result = {};
         
-
-        return res;
+        for(int i = start; i < candidates.size(); i++) {
+            if (target - candidates[i] > 0) {
+                auto tmpResult = helper(candidates, target - candidates[i],i);
+                
+                if (tmpResult.size() == 0) {
+                    continue;
+                }
+                //TODO: combine with candidates[i]
+                for (int j = 0; j < tmpResult.size(); j++) {
+                    tmpResult[j].push_back(candidates[i]);
+                    
+                    //TODO: Add to result
+                    result.push_back(tmpResult[j]);
+                }
+            }
+            else if (target - candidates[i] == 0) {
+                result.push_back({candidates[i]});
+            }
+            
+        }
+        
+        return result;
     }
 };

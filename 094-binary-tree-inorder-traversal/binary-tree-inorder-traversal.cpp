@@ -27,21 +27,26 @@
  */
 class Solution {
     
-public:
-    void searchNodeInorder(TreeNode* node,vector<int>& result) {
-        if (node == NULL) {
-            return;
-        }
-        
-        searchNodeInorder(node->left, result);
-        result.push_back(node->val);
-        searchNodeInorder(node->right, result);
-    }
-    
+public:   
     vector<int> inorderTraversal(TreeNode* root) {
         vector<int> result = {};
-        searchNodeInorder(root, result);
+        stack<TreeNode*> stackTree;
         
+        TreeNode* node = root;
+     
+        while ((!stackTree.empty())||(node != NULL)) {
+            if (node != NULL) {
+                stackTree.push(node);
+                node = node->left;
+            }
+            else {
+                node = stackTree.top();
+                stackTree.pop();
+                result.push_back(node->val);
+                node = node->right;
+            }
+        }
+
         return result;
     }
 };
